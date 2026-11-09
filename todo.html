@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudyHub - Todo & Deadline</title>
+  <!-- Google Font & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="app-layout">
+    <!-- Sidebar / Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+        <div class="brand-text">
+          <h2>StudyHub</h2>
+          <span>Quản lý học tập</span>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="nav-menu">
+        <a href="index.html" class="nav-link">
+          <i class="fa-solid fa-house"></i>
+          <span>Trang chủ</span>
+        </a>
+        <a href="schedule.html" class="nav-link">
+          <i class="fa-regular fa-calendar-days"></i>
+          <span>Lịch học & Lưu ý</span>
+        </a>
+        <a href="todo.html" class="nav-link active">
+          <i class="fa-solid fa-list-check"></i>
+          <span>Todo & Deadline</span>
+          <span class="badge" id="pending-count">0</span>
+        </a>
+        <a href="knowledge.html" class="nav-link">
+          <i class="fa-solid fa-book-bookmark"></i>
+          <span>Kho Kiến thức</span>
+        </a>
+      </nav>
+
+      <!-- Sidebar Footer (Thông tin user & Thời gian) -->
+      <div class="sidebar-footer">
+        <div class="user-profile-box">
+          <div class="user-avatar"><img src="user.png" alt="Avatar"></div>
+          <div class="user-details">
+            <span class="user-name" id="user-display-name">Học viên</span>
+            <span class="user-email" id="user-display-email">demo@studyhub.vn</span>
+          </div>
+          <button class="btn-logout" onclick="logout()" title="Đăng xuất tài khoản">
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </button>
+        </div>
+
+        <div class="today-box">
+          <i class="fa-regular fa-clock"></i>
+          <div>
+            <div id="current-day-text" class="day-text">Thứ ...</div>
+            <div id="current-date-text" class="date-text">--/--/----</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top header bar -->
+      <header class="top-header">
+        <div class="header-titles">
+          <h1>Todo & Deadline</h1>
+          <p>Quản lý bài tập lớn, đồ án và deadline quan trọng không thể bỏ lỡ</p>
+        </div>
+        <div class="header-actions">
+          <button id="btn-add-todo" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i> <span>Thêm deadline</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Quick stats -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon amber"><i class="fa-solid fa-hourglass-half"></i></div>
+          <div class="stat-info">
+            <span class="stat-num" id="todo-pending">0</span>
+            <span class="stat-label">Bài tập chưa xong</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon emerald"><i class="fa-solid fa-circle-check"></i></div>
+          <div class="stat-info">
+            <span class="stat-num" id="todo-completed">0</span>
+            <span class="stat-label">Đã hoàn thành</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls: Filter & Search -->
+      <div class="filter-bar">
+        <div class="filter-pills" id="todo-status-filter">
+          <button class="pill active" data-status="all">Tất cả deadline</button>
+          <button class="pill" data-status="pending">Chưa xong</button>
+          <button class="pill" data-status="done">Đã hoàn thành</button>
+        </div>
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="todo-search" placeholder="Tìm kiếm bài tập, môn học...">
+        </div>
+      </div>
+
+      <!-- Todo List -->
+      <div class="todo-list" id="todo-list">
+        <!-- Rendered via JS -->
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL: THÊM / SỬA TODO & DEADLINE -->
+  <div class="modal" id="modal-todo">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="todo-modal-title">Thêm Bài Tập / Deadline</h3>
+        <button class="modal-close" onclick="closeModal('modal-todo')">&times;</button>
+      </div>
+      <form id="form-todo" class="modal-body">
+        <input type="hidden" id="todo-id">
+        <div class="form-group">
+          <label for="todo-title">Tên bài tập / Nhiệm vụ <span class="required">*</span></label>
+          <input type="text" id="todo-title" placeholder="VD: Nộp đồ án giữa khóa SPCK" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="todo-subject">Môn học</label>
+            <input type="text" id="todo-subject" placeholder="VD: Web 1, Hệ điều hành, Toán...">
+          </div>
+          <div class="form-group">
+            <label for="todo-priority">Độ ưu tiên</label>
+            <select id="todo-priority">
+              <option value="high">🔴 Rất gấp / Quan trọng</option>
+              <option value="medium" selected>🟡 Bình thường</option>
+              <option value="low">🟢 Thong thả</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="todo-deadline">Hạn chót (Deadline) <span class="required">*</span></label>
+          <input type="datetime-local" id="todo-deadline" required>
+        </div>
+        <div class="form-group">
+          <label for="todo-note">Lưu ý cần chú ý / Yêu cầu</label>
+          <textarea id="todo-note" rows="3" placeholder="VD: Đẩy code lên GitHub, nộp báo cáo kèm slide..."></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="closeModal('modal-todo')">Hủy</button>
+          <button type="submit" class="btn btn-primary">Lưu Deadline</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudyHub - Lịch Học & Lưu Ý</title>
+  <!-- Google Font & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="app-layout">
+    <!-- Sidebar / Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+        <div class="brand-text">
+          <h2>StudyHub</h2>
+          <span>Quản lý học tập</span>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="nav-menu">
+        <a href="index.html" class="nav-link">
+          <i class="fa-solid fa-house"></i>
+          <span>Trang chủ</span>
+        </a>
+        <a href="schedule.html" class="nav-link active">
+          <i class="fa-regular fa-calendar-days"></i>
+          <span>Lịch học & Lưu ý</span>
+        </a>
+        <a href="todo.html" class="nav-link">
+          <i class="fa-solid fa-list-check"></i>
+          <span>Todo & Deadline</span>
+          <span class="badge" id="pending-count">0</span>
+        </a>
+        <a href="knowledge.html" class="nav-link">
+          <i class="fa-solid fa-book-bookmark"></i>
+          <span>Kho Kiến thức</span>
+        </a>
+      </nav>
+
+      <!-- Sidebar Footer (Thông tin user & Thời gian) -->
+      <div class="sidebar-footer">
+        <div class="user-profile-box">
+          <div class="user-avatar"><img src="user.png" alt="Avatar"></div>
+          <div class="user-details">
+            <span class="user-name" id="user-display-name">Học viên</span>
+            <span class="user-email" id="user-display-email">demo@studyhub.vn</span>
+          </div>
+          <button class="btn-logout" onclick="logout()" title="Đăng xuất tài khoản">
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </button>
+        </div>
+
+        <div class="today-box">
+          <i class="fa-regular fa-clock"></i>
+          <div>
+            <div id="current-day-text" class="day-text">Thứ ...</div>
+            <div id="current-date-text" class="date-text">--/--/----</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top header bar -->
+      <header class="top-header">
+        <div class="header-titles">
+          <h1>Lịch học & Lưu ý</h1>
+          <p>Theo dõi lịch lên lớp, phòng học và các lưu ý bài giảng quan trọng trong tuần</p>
+        </div>
+        <div class="header-actions">
+          <button id="btn-add-schedule" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i> <span>Thêm lịch học</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Quick stats -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon sky"><i class="fa-regular fa-calendar-check"></i></div>
+          <div class="stat-info">
+            <span class="stat-num" id="total-schedules">0</span>
+            <span class="stat-label">Buổi học trong tuần</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon blue"><i class="fa-solid fa-bell"></i></div>
+          <div class="stat-info">
+            <span class="stat-num" id="today-schedules">0</span>
+            <span class="stat-label">Lịch học hôm nay</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Schedule Filter by Day -->
+      <div class="filter-bar">
+        <span class="filter-label"><i class="fa-solid fa-filter"></i> Lọc thứ:</span>
+        <div class="filter-pills" id="schedule-day-filter">
+          <button class="pill active" data-day="all">Tất cả</button>
+          <button class="pill" data-day="2">Thứ 2</button>
+          <button class="pill" data-day="3">Thứ 3</button>
+          <button class="pill" data-day="4">Thứ 4</button>
+          <button class="pill" data-day="5">Thứ 5</button>
+          <button class="pill" data-day="6">Thứ 6</button>
+          <button class="pill" data-day="7">Thứ 7</button>
+          <button class="pill" data-day="CN">Chủ nhật</button>
+        </div>
+      </div>
+
+      <!-- Schedule Cards List -->
+      <div class="cards-grid" id="schedule-list">
+        <!-- Rendered via JS -->
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL: THÊM / SỬA LỊCH HỌC -->
+  <div class="modal" id="modal-schedule">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="schedule-modal-title">Thêm Lịch Học Mới</h3>
+        <button class="modal-close" onclick="closeModal('modal-schedule')">&times;</button>
+      </div>
+      <form id="form-schedule" class="modal-body">
+        <input type="hidden" id="schedule-id">
+        <div class="form-group">
+          <label for="schedule-subject">Môn học / Khóa học <span class="required">*</span></label>
+          <input type="text" id="schedule-subject" placeholder="VD: Lập trình Web 1, Lập trình hướng đối tượng..."
+            required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="schedule-day">Thứ trong tuần <span class="required">*</span></label>
+            <select id="schedule-day" required>
+              <option value="2">Thứ 2</option>
+              <option value="3">Thứ 3</option>
+              <option value="4">Thứ 4</option>
+              <option value="5">Thứ 5</option>
+              <option value="6">Thứ 6</option>
+              <option value="7">Thứ 7</option>
+              <option value="CN">Chủ nhật</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="schedule-time">Khung giờ <span class="required">*</span></label>
+            <input type="text" id="schedule-time" placeholder="VD: 07:00 - 11:30 hoặc 13:00 - 17:30" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="schedule-room">Phòng học / Link học Online</label>
+          <input type="text" id="schedule-room" placeholder="VD: 1.A401-Phòng học CLC / Zoom">
+        </div>
+        <div class="form-group">
+          <label for="schedule-topic">Chủ đề & Ghi chú buổi học</label>
+          <textarea id="schedule-topic" rows="3"
+            placeholder="VD: Làm bài tập Lab, kiểm tra Exception Handling, nộp báo cáo..."></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="closeModal('modal-schedule')">Hủy</button>
+          <button type="submit" class="btn btn-primary">Lưu Lịch Học</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudyHub - Tổng Quan Học Tập</title>
+  <!-- Google Font & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="app-layout">
+    <!-- Sidebar / Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+        <div class="brand-text">
+          <h2>StudyHub</h2>
+          <span>Quản lý học tập</span>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="nav-menu">
+        <a href="index.html" class="nav-link active">
+          <i class="fa-solid fa-house"></i>
+          <span>Trang chủ</span>
+        </a>
+        <a href="schedule.html" class="nav-link">
+          <i class="fa-regular fa-calendar-days"></i>
+          <span>Lịch học & Lưu ý</span>
+        </a>
+        <a href="todo.html" class="nav-link">
+          <i class="fa-solid fa-list-check"></i>
+          <span>Todo & Deadline</span>
+          <span class="badge" id="pending-count">0</span>
+        </a>
+        <a href="knowledge.html" class="nav-link">
+          <i class="fa-solid fa-book-bookmark"></i>
+          <span>Kho Kiến thức</span>
+        </a>
+      </nav>
+
+      <!-- Sidebar Footer (Thông tin user & Thời gian) -->
+      <div class="sidebar-footer">
+        <div class="user-profile-box">
+          <div class="user-avatar"><img src="user.png" alt="Avatar"></div>
+          <div class="user-details">
+            <span class="user-name" id="user-display-name">Học viên</span>
+            <span class="user-email" id="user-display-email">demo@studyhub.vn</span>
+          </div>
+          <button class="btn-logout" onclick="logout()" title="Đăng xuất tài khoản">
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </button>
+        </div>
+
+        <div class="today-box">
+          <i class="fa-regular fa-clock"></i>
+          <div>
+            <div id="current-day-text" class="day-text">Thứ ...</div>
+            <div id="current-date-text" class="date-text">--/--/----</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top header bar -->
+      <header class="top-header">
+        <div class="header-titles">
+          <h1>Tổng Quan Học Tập</h1>
+          <p>Bảng điều khiển trung tâm theo dõi tiến độ, lịch lên lớp và bài tập cần làm</p>
+        </div>
+      </header>
+
+      <!-- 1. THÔNG TIN CƠ BẢN VỀ TRANG WEB & BANNER CHÀO MỪNG -->
+      <div class="welcome-banner">
+        <div class="welcome-text">
+          <h2 id="dash-user-greeting">Xin chào, Bạn! 👋</h2>
+          <p>
+            <strong>StudyHub</strong> là website hỗ trợ quản lý học tập cá nhân toàn diện: nhắc lịch lên lớp theo tuần,
+            kiểm soát deadline bài tập lớn và lưu trữ kiến thức trọng tâm ôn thi.
+          </p>
+        </div>
+        <div class="welcome-stats">
+          <div class="welcome-stat-pill">
+            <i class="fa-regular fa-calendar-check"></i>
+            <span id="dash-total-schedules">0 buổi học/tuần</span>
+          </div>
+          <div class="welcome-stat-pill">
+            <i class="fa-solid fa-hourglass-half"></i>
+            <span id="dash-pending-todos">0 bài tập chưa xong</span>
+          </div>
+          <div class="welcome-stat-pill">
+            <i class="fa-solid fa-book-bookmark"></i>
+            <span id="dash-total-knowledge">0 ghi chú</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Feature Shortcuts -->
+      <div class="dashboard-grid">
+        <div class="features-shortcut-grid">
+          <a href="schedule.html" class="feature-shortcut-card">
+            <div class="feature-card-top">
+              <div class="stat-icon sky"><i class="fa-regular fa-calendar-days"></i></div>
+              <div class="feature-card-title">1. Lịch học & Lưu ý</div>
+            </div>
+            <div class="feature-card-desc">Thời khóa biểu cả tuần, phòng học, giờ học và nội dung cần chuẩn bị trước
+              buổi học.</div>
+            <div class="feature-card-action">Vào xem thời khóa biểu <i class="fa-solid fa-arrow-right"></i></div>
+          </a>
+
+          <a href="todo.html" class="feature-shortcut-card">
+            <div class="feature-card-top">
+              <div class="stat-icon amber"><i class="fa-solid fa-list-check"></i></div>
+              <div class="feature-card-title">2. Todo & Deadline</div>
+            </div>
+            <div class="feature-card-desc">Quản lý bài tập lớn, đồ án môn học, cảnh báo sát hạn và đánh dấu hoàn thành
+              nhanh.</div>
+            <div class="feature-card-action">Quản lý các deadline <i class="fa-solid fa-arrow-right"></i></div>
+          </a>
+
+          <a href="knowledge.html" class="feature-shortcut-card">
+            <div class="feature-card-top">
+              <div class="stat-icon emerald"><i class="fa-solid fa-book-bookmark"></i></div>
+              <div class="feature-card-title">3. Kho Kiến thức</div>
+            </div>
+            <div class="feature-card-desc">Tổng hợp ghi chú theo từng môn học và tuần học, đánh giá độ quan trọng ôn
+              thi.</div>
+            <div class="feature-card-action">Khám phá kho kiến thức <i class="fa-solid fa-arrow-right"></i></div>
+          </a>
+        </div>
+
+        <!-- 2. TÌNH HÌNH LỊCH HỌC: HÔM NAY VÀ NGÀY MAI -->
+        <section class="dashboard-section">
+          <div class="dash-section-header">
+            <h3><i class="fa-regular fa-calendar-days"></i> Lịch học Hôm nay & Ngày mai</h3>
+            <a href="schedule.html" class="dash-link-more">Xem toàn bộ lịch tuần <i
+                class="fa-solid fa-arrow-right"></i></a>
+          </div>
+          <div class="today-tomorrow-container">
+            <!-- Cột Hôm nay -->
+            <div class="day-column">
+              <div class="day-column-header">
+                <div class="day-column-title"><i class="fa-solid fa-star" style="color: #f59e0b;"></i> Lịch học Hôm nay
+                </div>
+                <span class="day-column-badge">Hôm nay</span>
+              </div>
+              <div id="dash-today-schedule">
+                <!-- Rendered via JS -->
+              </div>
+            </div>
+
+            <!-- Cột Ngày mai -->
+            <div class="day-column">
+              <div class="day-column-header">
+                <div class="day-column-title"><i class="fa-regular fa-calendar" style="color: var(--primary);"></i> Lịch
+                  học Ngày mai</div>
+                <span class="day-column-badge" style="background: #e0f2fe; color: #0369a1;">Ngày mai</span>
+              </div>
+              <div id="dash-tomorrow-schedule">
+                <!-- Rendered via JS -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. TÌNH HÌNH TODO & DEADLINE: CÁC DEADLINE GẦN HẾT HẠN -->
+        <section class="dashboard-section">
+          <div class="dash-section-header">
+            <h3><i class="fa-solid fa-fire" style="color: var(--danger);"></i> Bài tập & Deadline sắp đến hạn</h3>
+            <a href="todo.html" class="dash-link-more">Xem tất cả bài tập <i class="fa-solid fa-arrow-right"></i></a>
+          </div>
+          <div class="todo-list" id="dash-urgent-todos">
+            <!-- Rendered via JS -->
+          </div>
+        </section>
+
+        <!-- 4. TÌNH HÌNH KHO KIẾN THỨC: SỐ LƯỢNG CHIA THEO MÔN HỌC (SUBJECT) -->
+        <section class="dashboard-section">
+          <div class="dash-section-header">
+            <h3><i class="fa-solid fa-graduation-cap"></i> Thống kê Kho Kiến thức theo Môn học</h3>
+            <a href="knowledge.html" class="dash-link-more">Vào kho kiến thức <i
+                class="fa-solid fa-arrow-right"></i></a>
+          </div>
+          <div class="subject-stats-grid" id="dash-subject-stats">
+            <!-- Rendered via JS -->
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
