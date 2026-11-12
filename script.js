@@ -29,7 +29,7 @@ const DEFAULT_SCHEDULES = [
     day: "6",
     time: "13:00 - 17:30",
     room: "C.E401",
-    topic: "Làm đồ án cuối khóa. Chuẩn bị demo giao diện và tính năng CRUD."
+    topic: "Làm đồ án cuối khóa. Chuẩn bị demo giao diện và tính năng."
   },
   {
     id: "sch-3",
