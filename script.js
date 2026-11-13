@@ -1,9 +1,3 @@
-// ===================================================
-// StudyHub - Logic Ứng Dụng Quản Lý Học Tập Đa Trang
-// 5 Trang: auth.html, index.html (Dashboard), schedule.html, todo.html, knowledge.html
-// Sử dụng LocalStorage để lưu trữ dữ liệu an toàn & tiện lợi
-// ===================================================
-
 // 1. DỮ LIỆU TÀI KHOẢN MẪU
 const DEFAULT_USERS = [
   {
