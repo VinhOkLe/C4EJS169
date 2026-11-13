@@ -40,6 +40,14 @@ const DEFAULT_SCHEDULES = [
     time: "07:00 - 11:30",
     room: "1.A401-Phòng học CLC",
     topic: "Làm và chấm bài Lab 4"
+  },
+  {
+    id: "sch-5",
+    subject: "Tiếng anh",
+    day: "7",
+    time: "18:00 - 21:00",
+    room: "R.201",
+    topic: "Làm writing part2 Dynamic Chart"
   }
 ];
 
