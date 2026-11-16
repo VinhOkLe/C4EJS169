@@ -163,10 +163,18 @@ function checkAuth(requireAuth = true) {
 }
 
 window.logout = function () {
-  if (confirm('Bạn có chắc chắn muốn đăng xuất không?')) {
-    localStorage.removeItem('studyhub_currentUser');
-    window.location.href = 'auth.html';
-  }
+  showConfirm({
+    title: "Đăng xuất tài khoản",
+    message: "Bạn có chắc chắn muốn đăng xuất khỏi hệ thống không?",
+    icon: "fa-right-from-bracket",
+    type: "primary",
+    confirmText: "Đăng xuất",
+    cancelText: "Hủy",
+    onConfirm: () => {
+      localStorage.removeItem('studyhub_currentUser');
+      window.location.href = 'auth.html';
+    }
+  });
 };
 
 window.loginAsGuest = function () {
@@ -260,12 +268,12 @@ function setupAuthPage() {
 
       if (user) {
         localStorage.setItem('studyhub_currentUser', JSON.stringify(user));
-        showToast('Đăng nhập thành công! Đang chuyển hướng...');
+        showToast('Đăng nhập thành công! Đang chuyển hướng...', 'success');
         setTimeout(() => {
           window.location.href = 'index.html';
         }, 700);
       } else {
-        alert('Tên đăng nhập / Email hoặc mật khẩu không chính xác!\n(Gợi ý: Dùng "Sinh viên MindX" hoặc "demo@studyhub.vn" / mật khẩu "123")');
+        showToast('Tên đăng nhập / Email hoặc mật khẩu không chính xác!\n(Gợi ý: Dùng "Sinh viên MindX" hoặc "demo@studyhub.vn" / mật khẩu "123")', 'error');
       }
     });
   }
@@ -280,12 +288,12 @@ function setupAuthPage() {
       const rePassword = document.getElementById('reg-repassword').value;
 
       if (password !== rePassword) {
-        alert('Mật khẩu nhập lại không khớp!');
+        showToast('Mật khẩu nhập lại không khớp!', 'warning');
         return;
       }
 
       if (users.some(u => u.email.toLowerCase() === email || u.fullName.toLowerCase() === fullName.toLowerCase())) {
-        alert('Tên hoặc Email này đã tồn tại! Vui lòng chọn tên khác hoặc chuyển sang Đăng nhập.');
+        showToast('Tên hoặc Email này đã tồn tại! Vui lòng chọn tên khác hoặc chuyển sang Đăng nhập.', 'warning');
         return;
       }
 
@@ -294,7 +302,7 @@ function setupAuthPage() {
       localStorage.setItem('studyhub_users', JSON.stringify(users));
       localStorage.setItem('studyhub_currentUser', JSON.stringify(newUser));
 
-      showToast('Đăng ký thành công! Đang chuyển đến bảng điều khiển...');
+      showToast('Đăng ký thành công! Đang chuyển đến bảng điều khiển...', 'success');
       setTimeout(() => {
         window.location.href = 'index.html';
       }, 700);
@@ -358,7 +366,9 @@ function updateBadgesAndStats() {
   updateKnowledgeSubjectFilter();
 }
 
-function showToast(message) {
+let toastTimeout = null;
+
+function showToast(message, type = 'success') {
   let toast = document.getElementById('toast');
   if (!toast) {
     toast = document.createElement('div');
@@ -366,11 +376,95 @@ function showToast(message) {
     toast.className = 'toast';
     document.body.appendChild(toast);
   }
-  toast.innerHTML = `<i class="fa-solid fa-check-circle" style="color: #38bdf8;"></i> ${message}`;
-  toast.classList.add('show');
-  setTimeout(() => {
+
+  let iconHtml = '<i class="fa-solid fa-circle-check toast-icon" style="color: #38bdf8;"></i>';
+  toast.className = 'toast show toast-success';
+
+  if (type === 'error' || type === 'danger') {
+    iconHtml = '<i class="fa-solid fa-circle-xmark toast-icon" style="color: #f87171;"></i>';
+    toast.className = 'toast show toast-error';
+  } else if (type === 'warning') {
+    iconHtml = '<i class="fa-solid fa-triangle-exclamation toast-icon" style="color: #fbbf24;"></i>';
+    toast.className = 'toast show toast-warning';
+  } else if (type === 'info') {
+    iconHtml = '<i class="fa-solid fa-circle-info toast-icon" style="color: #38bdf8;"></i>';
+    toast.className = 'toast show toast-info';
+  }
+
+  const formattedMsg = String(message).replace(/\n/g, '<br>');
+  toast.innerHTML = `${iconHtml}<div class="toast-content">${formattedMsg}</div>`;
+
+  if (toastTimeout) {
+    clearTimeout(toastTimeout);
+  }
+
+  toastTimeout = setTimeout(() => {
     toast.classList.remove('show');
-  }, 3000);
+  }, 3500);
+}
+
+// Thay thế window.alert mặc định để toàn bộ thông báo đều dùng Toast đẹp mắt
+window.alert = function (message) {
+  showToast(message, 'warning');
+};
+
+// Modal Xác Nhận Tùy Chỉnh (Thay thế confirm() mặc định)
+function showConfirm({
+  title = "Xác nhận",
+  message = "Bạn có chắc chắn muốn thực hiện hành động này?",
+  icon = "fa-trash-can",
+  type = "danger",
+  confirmText = "Xác nhận",
+  cancelText = "Hủy",
+  onConfirm = () => {}
+}) {
+  let modal = document.getElementById('modal-confirm-dialog');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'modal-confirm-dialog';
+    modal.className = 'modal';
+    document.body.appendChild(modal);
+  }
+
+  const iconClass = type === 'danger' ? 'danger' : 'primary';
+  const confirmBtnClass = type === 'danger' ? 'btn-danger' : 'btn-primary';
+
+  modal.innerHTML = `
+    <div class="modal-confirm-content">
+      <div class="confirm-icon-box ${iconClass}">
+        <i class="fa-solid ${icon}"></i>
+      </div>
+      <div class="confirm-title">${escapeHtml(title)}</div>
+      <div class="confirm-desc">${escapeHtml(message)}</div>
+      <div class="confirm-actions">
+        <button type="button" class="btn btn-outline" id="btn-confirm-cancel">${escapeHtml(cancelText)}</button>
+        <button type="button" class="btn ${confirmBtnClass}" id="btn-confirm-ok">${escapeHtml(confirmText)}</button>
+      </div>
+    </div>
+  `;
+
+  modal.classList.add('active');
+
+  const closeDialog = () => {
+    modal.classList.remove('active');
+  };
+
+  const btnCancel = modal.querySelector('#btn-confirm-cancel');
+  const btnOk = modal.querySelector('#btn-confirm-ok');
+
+  btnCancel.onclick = closeDialog;
+  btnOk.onclick = () => {
+    closeDialog();
+    if (typeof onConfirm === 'function') {
+      onConfirm();
+    }
+  };
+
+  modal.onclick = (e) => {
+    if (e.target === modal) {
+      closeDialog();
+    }
+  };
 }
 
 window.closeModal = function (modalId) {
@@ -762,12 +856,20 @@ window.editSchedule = function (id) {
 };
 
 window.deleteSchedule = function (id) {
-  if (confirm('Bạn có chắc chắn muốn xóa buổi học này không?')) {
-    schedules = schedules.filter(s => s.id !== id);
-    saveData();
-    renderSchedule();
-    showToast('Đã xóa buổi học!');
-  }
+  showConfirm({
+    title: "Xóa buổi học",
+    message: "Bạn có chắc chắn muốn xóa buổi học này khỏi thời khóa biểu không?",
+    icon: "fa-trash-can",
+    type: "danger",
+    confirmText: "Xóa",
+    cancelText: "Hủy",
+    onConfirm: () => {
+      schedules = schedules.filter(s => s.id !== id);
+      saveData();
+      renderSchedule();
+      showToast('Đã xóa buổi học thành công!', 'success');
+    }
+  });
 };
 
 // ===================================================
@@ -969,12 +1071,20 @@ window.editTodo = function (id) {
 };
 
 window.deleteTodo = function (id) {
-  if (confirm('Bạn có chắc muốn xóa bài tập này?')) {
-    todos = todos.filter(t => t.id !== id);
-    saveData();
-    renderTodos();
-    showToast('Đã xóa bài tập!');
-  }
+  showConfirm({
+    title: "Xóa bài tập / deadline",
+    message: "Bạn có chắc chắn muốn xóa bài tập này không?",
+    icon: "fa-trash-can",
+    type: "danger",
+    confirmText: "Xóa",
+    cancelText: "Hủy",
+    onConfirm: () => {
+      todos = todos.filter(t => t.id !== id);
+      saveData();
+      renderTodos();
+      showToast('Đã xóa bài tập thành công!', 'success');
+    }
+  });
 };
 
 // ===================================================
@@ -1171,10 +1281,18 @@ window.editKnowledge = function (id) {
 };
 
 window.deleteKnowledge = function (id) {
-  if (confirm('Bạn có chắc muốn xóa ghi chú này?')) {
-    knowledgeList = knowledgeList.filter(k => k.id !== id);
-    saveData();
-    renderKnowledge();
-    showToast('Đã xóa ghi chú kiến thức!');
-  }
+  showConfirm({
+    title: "Xóa ghi chú kiến thức",
+    message: "Bạn có chắc muốn xóa ghi chú này khỏi kho kiến thức không?",
+    icon: "fa-trash-can",
+    type: "danger",
+    confirmText: "Xóa",
+    cancelText: "Hủy",
+    onConfirm: () => {
+      knowledgeList = knowledgeList.filter(k => k.id !== id);
+      saveData();
+      renderKnowledge();
+      showToast('Đã xóa ghi chú kiến thức thành công!', 'success');
+    }
+  });
 };
